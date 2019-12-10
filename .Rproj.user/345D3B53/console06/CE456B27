@@ -1,0 +1,5 @@
+]0;~/Desktop/website[?1034hwireless-10-145-164-117:website zhihaochen$ [Kwireless-10-145-164-117:website zhihaochen$ git remote add origin https://github.com/edwardzchen/website.git
+fatal: remote origin already exists.
+]0;~/Desktop/websitewireless-10-145-164-117:website zhihaochen$ git add README.md[K[K[K[K[K[K[K[K[Knew_py.py
+fatal: pathspec 'new_py.py' did not match any files
+]0;~/Desktop/websitewireless-10-145-164-117:website zhihaochen$ 
