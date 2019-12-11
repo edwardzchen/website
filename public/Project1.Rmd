@@ -103,5 +103,3 @@ ggplot()+geom_hline(aes(yintercept=0),lty=2)+
  geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col="red")+
  geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))
 ```
-
-

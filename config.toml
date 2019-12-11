@@ -13,20 +13,16 @@ theme = "hugo-sustain"
 [params]
   avatar = "dingdang.jpg"
   author = "Edward Chen"
-  description = "Describe your website"
+  description = "This is a personal website designed as an expreiment. "
 
   # Custom assets can be linked with their paths relative to static/
   custom_css = []
   custom_js  = []
 
 [params.social]
-  Github        = "username"
-  Email         = "email@example.com"
-  Twitter       = "username"
-  LinkedIn      = "username"
-  Stackoverflow = "username"
-  Medium        = "username"
-  Telegram      = "username"
+  Github        = "edwardzchen"
+  Email         = "CZhihao@utexas.edu"
+  LinkedIn      = "www.linkedin.com/in/czhihao"
 
 ## Main Menu
 [[menu.main]]
