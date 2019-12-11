@@ -1,0 +1,107 @@
+---
+title: "Project1-1"
+author: "Zhihao Chen zc4284"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(httr)
+library(readxl)
+
+turnout <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-10-09/voter_turnout.csv")
+tuition <- read_excel("~/Desktop/website/content/us_avg_tuition.xlsx")
+```
+## 0. Introduction
+The first data was called US voter turnout, which includes number of age-eligible voters versus total votes counted by state and year. The second data was called US average tuition, which includes the avrage tuition by state and year. Both of these data were found on the github rfordatascience website, and they are interesting becasue I think there might be a potential correlation between the voter turnout and college tuition in some area of the US. 
+
+## 1. Tidying: Rearrange Wide/Long
+The tuition data was first pivot longer to create new rows for each state with each year, and then the year was seperate into two parts to make the year more tidyer. Unnecessary columns are removed. For the turnout data, columns that contain unnecessary information were removed. 
+```{r}
+tuition_2 <- tuition%>%pivot_longer(c(2,3,4,5,6,7,8,9,10,11,12,13))%>%separate(name, into=c("year","unknown"), convert=T)%>%rename(state = State)%>%select(-unknown)
+glimpse(tuition_2)
+
+turnout_2 <- turnout%>%select(-X, -icpsr_state_code, -alphanumeric_state_code)
+glimpse(turnout_2)
+```
+
+## 2. Joining/Merging
+Data tuition_2 was joined with data turnout_2 using left_join, and the joined data was piped into na.omit to remove any row with NA. These two data were joined by two columns, year and states, so there is no data being lost during the joining. Column value was renamed to avg_tuition. 
+```{r}
+temp <- tuition_2%>%left_join(turnout_2)%>%na.omit()%>%rename(tuition = value)
+glimpse(temp)
+```
+
+## 3. Wrangling
+A new column called rate was calculated with votes and eligible_voters, which represents the actual turnout rate for a given year and state. To understand the center and spread of the tution, the mean and standard deviation of tuition was calculated, and we can see there is a great difference in tuition across states. In order to better understand the variance of tuition across the US, a robust statistic is required, since the range of variable tuition is large and may contain outliers. Thus, the median absolute deviation (MAD) of avg_tuition was calculated. This statistic measures the dispersion of the tuition across states, and a value of 1602.384 of MAD indicates a great variance in the tuition. Next, the data was arranged by rate to see which state has the highest voting turnout, and interestingly Minnesota has a relatively high voting turnout from 2004 to 2012. The min and max of number of eligible voters base on state were found, the min and max of number of votes base on year were found.
+
+By grouping by state and year, we can measure the mean and see the 1 over rate. And then the quantile of tuition of each state was found, we can see a rough distribution of tuition can be observed. Next, a correlation was found between turnout rate and tuition of California, and there is no correlation between them. 
+```{r}
+# mutate()
+temp <- temp%>%mutate(rate = votes/eligible_voters)
+glimpse(temp)
+# group_by(), summarize(), select()
+temp%>%group_by(state)%>%summarize(mean(tuition), sd(tuition))
+temp%>%select(tuition)%>% 
+  mutate(median = median(tuition), dev = tuition-median, absdev = abs(dev), MAD=median(absdev))
+# arrange()
+temp%>%arrange(desc(rate))
+
+temp%>%group_by(state)%>%summarize(min(eligible_voters), max(eligible_voters))
+temp%>%group_by(year)%>%summarize(min(votes), max(votes))
+
+temp%>%group_by(state, year)%>%summarize(1/rate)
+
+temp%>%group_by(state)%>%do(data.frame(t(quantile(.$tuition))))
+# filter()
+temp%>%filter(state=="California")%>%select(rate, tuition)%>%cor()
+```
+
+## 4. Visualizing
+The first plot demonstrates the average tuition across different states, and the mean of tuition from differnt year was calculated within the fun.y function. The second plot demonstrate the relationship between tuition and turnout rate across differnt state, but there is no clear linear correlation among them. The potential effect was measured during the dimentionality reduction section. 
+```{r}
+ggplot(temp, aes(state))+
+  geom_bar(aes(y=tuition,fill=state), stat="summary", fun.y="mean")+ 
+  theme(axis.text.x = element_text(angle=45, hjust=1), legend.position="none")+
+  labs(title = "Average Tuition across States", x = "State", y = "Average Tuition")
+
+ggplot(temp, aes(tuition, rate, color=state))+
+  geom_point()+
+  theme(axis.text.x=element_text(angle=60, hjust=1))+
+  labs(title = "Tuition against Turnout Rate", x = "Tuition", y = "Turnout Rate")
+```
+
+## 5. Dimensionality Reduction
+From the result of PCA and correpounding plot, we can see that the votes variable and the eligible voters variable are strongly correlated, but the other two variables do not address much variation on other variables. 
+```{r}
+temp2 <- temp%>%select(-year, -state)
+temp2_scaled = data.frame(scale(temp2))
+ggplot(temp2_scaled, aes(x = rate, y = tuition))+geom_point()+coord_fixed()
+
+temp_pca<-princomp(temp2_scaled)
+summary(temp_pca, loadings = T)
+
+eigval<-temp_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+
+ggplot()+geom_bar(aes(y=varprop,x=1:4),stat="identity")+xlab("")+geom_path(aes(y=varprop,x=1:4))+
+ geom_text(aes(x=1:4,y=varprop,label=round(varprop,2)),vjust=1,col="white",size=5)+
+ scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+ scale_x_continuous(breaks=1:10)
+
+round(cumsum(eigval)/sum(eigval),2) 
+eigval
+
+ggplot()+geom_point(aes(temp_pca$scores[,1], temp_pca$scores[,2]))+xlab("PC1")+ylab("PC2")
+
+temp_pca$loadings[1:4,1:2]%>%as.data.frame%>%rownames_to_column%>%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+ geom_vline(aes(xintercept=0),lty=2)+ylab("PC2")+xlab("PC1")+
+ geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col="red")+
+ geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))
+```
+
+

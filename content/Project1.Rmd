@@ -13,7 +13,7 @@ library(httr)
 library(readxl)
 
 turnout <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-10-09/voter_turnout.csv")
-tuition <- read_excel("us_avg_tuition.xlsx")
+tuition <- read_excel("~/Desktop/website/content/us_avg_tuition.xlsx")
 ```
 ## 0. Introduction
 The first data was called US voter turnout, which includes number of age-eligible voters versus total votes counted by state and year. The second data was called US average tuition, which includes the avrage tuition by state and year. Both of these data were found on the github rfordatascience website, and they are interesting becasue I think there might be a potential correlation between the voter turnout and college tuition in some area of the US. 

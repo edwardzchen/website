@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Chris Turner</title>
+    <title>Edward Chen</title>
     <link>/</link>
-    <description>Recent content on Chris Turner</description>
+    <description>Recent content on Edward Chen</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
     <lastBuildDate>Sun, 02 Oct 2016 22:55:05 -0400</lastBuildDate>
@@ -17,7 +17,10 @@
       <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
       
       <guid>/projects/</guid>
-      <description></description>
+      <description>Projects Here are some projects I have been working on:
+  Project 1
+  Project 2
+  </description>
     </item>
     
     <item>
@@ -74,6 +77,25 @@ Follow the following steps:
       <description>Move static content to static Jekyll has a rule that any directory not starting with _ will be copied as-is to the _site output. Hugo keeps all static content under static. You should therefore move it all there. With Jekyll, something that looked like
 ▾ &amp;lt;root&amp;gt;/ ▾ images/ logo.png  should become
 ▾ &amp;lt;root&amp;gt;/ ▾ static/ ▾ images/ logo.png  Additionally, you&#39;ll want any files that should reside at the root (such as CNAME) to be moved to static.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>c— title: ‘Project 2: Modeling, Testing, and Predicting’ author: “SDS348 Fall 2019” date: ’’ output: pdf_document: toc: yes html_document: toc: yes toc_float: collapsed: no smooth_scroll: yes —
+Modeling Instructions A knitted R Markdown document (as a PDF) and the raw R Markdown file (as .Rmd) should both be submitted to Canvas by 11:59pm on 11/24/2019. These two documents will be graded jointly, so they must be consistent (i.e., don’t change the R Markdown file without also updating the knitted document).</description>
+    </item>
+    
+    <item>
+      <title>Project1-1</title>
+      <link>/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project1/</guid>
+      <description>0. Introduction The first data was called US voter turnout, which includes number of age-eligible voters versus total votes counted by state and year. The second data was called US average tuition, which includes the avrage tuition by state and year. Both of these data were found on the github rfordatascience website, and they are interesting becasue I think there might be a potential correlation between the voter turnout and college tuition in some area of the US.</description>
     </item>
     
   </channel>

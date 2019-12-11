@@ -1,0 +1,231 @@
+---
+title: "Project1-1"
+author: "Zhihao Chen zc4284"
+output: html_document
+---
+
+
+
+<div id="introduction" class="section level2">
+<h2>0. Introduction</h2>
+<p>The first data was called US voter turnout, which includes number of age-eligible voters versus total votes counted by state and year. The second data was called US average tuition, which includes the avrage tuition by state and year. Both of these data were found on the github rfordatascience website, and they are interesting becasue I think there might be a potential correlation between the voter turnout and college tuition in some area of the US.</p>
+</div>
+<div id="tidying-rearrange-widelong" class="section level2">
+<h2>1. Tidying: Rearrange Wide/Long</h2>
+<p>The tuition data was first pivot longer to create new rows for each state with each year, and then the year was seperate into two parts to make the year more tidyer. Unnecessary columns are removed. For the turnout data, columns that contain unnecessary information were removed.</p>
+<pre class="r"><code>tuition_2 &lt;- tuition%&gt;%pivot_longer(c(2,3,4,5,6,7,8,9,10,11,12,13))%&gt;%separate(name, into=c(&quot;year&quot;,&quot;unknown&quot;), convert=T)%&gt;%rename(state = State)%&gt;%select(-unknown)
+glimpse(tuition_2)</code></pre>
+<pre><code>## Observations: 600
+## Variables: 3
+## $ state &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama…
+## $ year  &lt;int&gt; 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 201…
+## $ value &lt;dbl&gt; 5682.838, 5840.550, 5753.496, 6008.169, 6475.092, 7188.954, 807…</code></pre>
+<pre class="r"><code>turnout_2 &lt;- turnout%&gt;%select(-X, -icpsr_state_code, -alphanumeric_state_code)
+glimpse(turnout_2)</code></pre>
+<pre><code>## Observations: 936
+## Variables: 4
+## $ year            &lt;int&gt; 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014,…
+## $ state           &lt;fct&gt; United States, Alabama, Alaska, Arizona, Arkansas, Ca…
+## $ votes           &lt;int&gt; 83262122, 1191274, 285431, 1537671, 852642, 7513972, …
+## $ eligible_voters &lt;int&gt; 227157964, 3588783, 520562, 4510186, 2117881, 2444041…</code></pre>
+</div>
+<div id="joiningmerging" class="section level2">
+<h2>2. Joining/Merging</h2>
+<p>Data tuition_2 was joined with data turnout_2 using left_join, and the joined data was piped into na.omit to remove any row with NA. These two data were joined by two columns, year and states, so there is no data being lost during the joining. Column value was renamed to avg_tuition.</p>
+<pre class="r"><code>temp &lt;- tuition_2%&gt;%left_join(turnout_2)%&gt;%na.omit()%&gt;%rename(tuition = value)</code></pre>
+<pre><code>## Joining, by = c(&quot;state&quot;, &quot;year&quot;)</code></pre>
+<pre><code>## Warning: Column `state` joining character vector and factor, coercing into
+## character vector</code></pre>
+<pre class="r"><code>glimpse(temp)</code></pre>
+<pre><code>## Observations: 273
+## Variables: 5
+## $ state           &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alaska&quot;,…
+## $ year            &lt;int&gt; 2004, 2008, 2010, 2014, 2004, 2006, 2008, 2010, 2012,…
+## $ tuition         &lt;dbl&gt; 5682.838, 6475.092, 8071.134, 9496.084, 4328.281, 491…
+## $ votes           &lt;int&gt; 1890317, 2105622, 1503232, 1191274, 314502, 238307, 3…
+## $ eligible_voters &lt;int&gt; 3292608, 3454510, 3472582, 3588783, 452124, 465169, 4…</code></pre>
+</div>
+<div id="wrangling" class="section level2">
+<h2>3. Wrangling</h2>
+<p>A new column called rate was calculated with votes and eligible_voters, which represents the actual turnout rate for a given year and state. To understand the center and spread of the tution, the mean and standard deviation of tuition was calculated, and we can see there is a great difference in tuition across states. In order to better understand the variance of tuition across the US, a robust statistic is required, since the range of variable tuition is large and may contain outliers. Thus, the median absolute deviation (MAD) of avg_tuition was calculated. This statistic measures the dispersion of the tuition across states, and a value of 1602.384 of MAD indicates a great variance in the tuition. Next, the data was arranged by rate to see which state has the highest voting turnout, and interestingly Minnesota has a relatively high voting turnout from 2004 to 2012. The min and max of number of eligible voters base on state were found, the min and max of number of votes base on year were found.</p>
+<p>By grouping by state and year, we can measure the mean and see the 1 over rate. And then the quantile of tuition of each state was found, we can see a rough distribution of tuition can be observed. Next, a correlation was found between turnout rate and tuition of California, and there is no correlation between them.</p>
+<pre class="r"><code># mutate()
+temp &lt;- temp%&gt;%mutate(rate = votes/eligible_voters)
+glimpse(temp)</code></pre>
+<pre><code>## Observations: 273
+## Variables: 6
+## $ state           &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alaska&quot;,…
+## $ year            &lt;int&gt; 2004, 2008, 2010, 2014, 2004, 2006, 2008, 2010, 2012,…
+## $ tuition         &lt;dbl&gt; 5682.838, 6475.092, 8071.134, 9496.084, 4328.281, 491…
+## $ votes           &lt;int&gt; 1890317, 2105622, 1503232, 1191274, 314502, 238307, 3…
+## $ eligible_voters &lt;int&gt; 3292608, 3454510, 3472582, 3588783, 452124, 465169, 4…
+## $ rate            &lt;dbl&gt; 0.5741093, 0.6095284, 0.4328860, 0.3319437, 0.6956101…</code></pre>
+<pre class="r"><code># group_by(), summarize(), select()
+temp%&gt;%group_by(state)%&gt;%summarize(mean(tuition), sd(tuition))</code></pre>
+<pre><code>## # A tibble: 49 x 3
+##    state       `mean(tuition)` `sd(tuition)`
+##    &lt;chr&gt;                 &lt;dbl&gt;         &lt;dbl&gt;
+##  1 Alabama               7431.         1697.
+##  2 Alaska                5376.          716.
+##  3 Arizona               7678.         2398.
+##  4 Arkansas              6702.          688.
+##  5 California            7210.         1920.
+##  6 Colorado              7071.         1832.
+##  7 Connecticut           9376.         1146.
+##  8 Delaware              9616.         1351.
+##  9 Florida               5039.         1231.
+## 10 Georgia               6010.         1682.
+## # … with 39 more rows</code></pre>
+<pre class="r"><code>temp%&gt;%select(tuition)%&gt;% 
+  mutate(median = median(tuition), dev = tuition-median, absdev = abs(dev), MAD=median(absdev))</code></pre>
+<pre><code>## # A tibble: 273 x 5
+##    tuition median    dev absdev   MAD
+##      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+##  1   5683.  7476. -1793.  1793. 1602.
+##  2   6475.  7476. -1001.  1001. 1602.
+##  3   8071.  7476.   595.   595. 1602.
+##  4   9496.  7476.  2020.  2020. 1602.
+##  5   4328.  7476. -3148.  3148. 1602.
+##  6   4919.  7476. -2557.  2557. 1602.
+##  7   5075.  7476. -2400.  2400. 1602.
+##  8   5759.  7476. -1717.  1717. 1602.
+##  9   6026.  7476. -1450.  1450. 1602.
+## 10   6149.  7476. -1327.  1327. 1602.
+## # … with 263 more rows</code></pre>
+<pre class="r"><code># arrange()
+temp%&gt;%arrange(desc(rate))</code></pre>
+<pre><code>## # A tibble: 273 x 6
+##    state          year tuition   votes eligible_voters  rate
+##    &lt;chr&gt;         &lt;int&gt;   &lt;dbl&gt;   &lt;int&gt;           &lt;int&gt; &lt;dbl&gt;
+##  1 Minnesota      2004   8144. 2842912         3609185 0.788
+##  2 Minnesota      2008   9024. 2921147         3740142 0.781
+##  3 Minnesota      2012  10793. 2950780         3861598 0.764
+##  4 Wisconsin      2004   6575. 3016288         4006948 0.753
+##  5 Maine          2004   7058.  751519         1003792 0.749
+##  6 Wisconsin      2008   7373. 2997086         4120694 0.727
+##  7 Oregon         2004   6579. 1851671         2550887 0.726
+##  8 New Hampshire  2008  11168.  719643          992226 0.725
+##  9 Maine          2008   8764.  744456         1036242 0.718
+## 10 Colorado       2008   6284. 2422236         3382959 0.716
+## # … with 263 more rows</code></pre>
+<pre class="r"><code>temp%&gt;%group_by(state)%&gt;%summarize(min(eligible_voters), max(eligible_voters))</code></pre>
+<pre><code>## # A tibble: 49 x 3
+##    state       `min(eligible_voters)` `max(eligible_voters)`
+##    &lt;chr&gt;                        &lt;int&gt;                  &lt;int&gt;
+##  1 Alabama                    3292608                3588783
+##  2 Alaska                      452124                 520562
+##  3 Arizona                    3717055                4510186
+##  4 Arkansas                   1969208                2117881
+##  5 California                21132533               24440416
+##  6 Colorado                   3192647                3800664
+##  7 Connecticut                2429634                2577311
+##  8 Delaware                    584817                 681526
+##  9 Florida                   11811921               13914216
+## 10 Georgia                    5878186                6725041
+## # … with 39 more rows</code></pre>
+<pre class="r"><code>temp%&gt;%group_by(year)%&gt;%summarize(min(votes), max(votes))</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##    year `min(votes)` `max(votes)`
+##   &lt;int&gt;        &lt;int&gt;        &lt;int&gt;
+## 1  2004       245789     12589367
+## 2  2006       196217      8899059
+## 3  2008       256035     13743177
+## 4  2010       190822     10529134
+## 5  2012       250701     13202158
+## 6  2014       171153      7513972</code></pre>
+<pre class="r"><code>temp%&gt;%group_by(state, year)%&gt;%summarize(1/rate)</code></pre>
+<pre><code>## # A tibble: 273 x 3
+## # Groups:   state [49]
+##    state    year `1/rate`
+##    &lt;chr&gt;   &lt;int&gt;    &lt;dbl&gt;
+##  1 Alabama  2004     1.74
+##  2 Alabama  2008     1.64
+##  3 Alabama  2010     2.31
+##  4 Alabama  2014     3.01
+##  5 Alaska   2004     1.44
+##  6 Alaska   2006     1.95
+##  7 Alaska   2008     1.46
+##  8 Alaska   2010     1.89
+##  9 Alaska   2012     1.70
+## 10 Alaska   2014     1.82
+## # … with 263 more rows</code></pre>
+<pre class="r"><code>temp%&gt;%group_by(state)%&gt;%do(data.frame(t(quantile(.$tuition))))</code></pre>
+<pre><code>## # A tibble: 49 x 6
+## # Groups:   state [49]
+##    state         X0.  X25.  X50.   X75.  X100.
+##    &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Alabama     5683. 6277. 7273.  8427.  9496.
+##  2 Alaska      4328. 4958. 5417.  5959.  6149.
+##  3 Arizona     5138. 5626. 7449.  9810. 10414.
+##  4 Arkansas    5772. 6278. 6659.  7190.  7606.
+##  5 California  5286. 5476. 7046.  8939.  9361.
+##  6 Colorado    4704. 5768. 7016.  8532.  9299.
+##  7 Connecticut 7984. 8368. 9827. 10037. 10664.
+##  8 Delaware    8353. 8682. 8995. 10534. 11515.
+##  9 Florida     3848. 3953. 4830.  6136.  6495.
+## 10 Georgia     4298. 4646. 5630.  7497.  8063.
+## # … with 39 more rows</code></pre>
+<pre class="r"><code># filter()
+temp%&gt;%filter(state==&quot;California&quot;)%&gt;%select(rate, tuition)%&gt;%cor()</code></pre>
+<pre><code>##               rate    tuition
+## rate     1.0000000 -0.4082598
+## tuition -0.4082598  1.0000000</code></pre>
+</div>
+<div id="visualizing" class="section level2">
+<h2>4. Visualizing</h2>
+<p>The first plot demonstrates the average tuition across different states, and the mean of tuition from differnt year was calculated within the fun.y function. The second plot demonstrate the relationship between tuition and turnout rate across differnt state, but there is no clear linear correlation among them. The potential effect was measured during the dimentionality reduction section.</p>
+<pre class="r"><code>ggplot(temp, aes(state))+
+  geom_bar(aes(y=tuition,fill=state), stat=&quot;summary&quot;, fun.y=&quot;mean&quot;)+ 
+  theme(axis.text.x = element_text(angle=45, hjust=1), legend.position=&quot;none&quot;)+
+  labs(title = &quot;Average Tuition across States&quot;, x = &quot;State&quot;, y = &quot;Average Tuition&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(temp, aes(tuition, rate, color=state))+
+  geom_point()+
+  theme(axis.text.x=element_text(angle=60, hjust=1))+
+  labs(title = &quot;Tuition against Turnout Rate&quot;, x = &quot;Tuition&quot;, y = &quot;Turnout Rate&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+</div>
+<div id="dimensionality-reduction" class="section level2">
+<h2>5. Dimensionality Reduction</h2>
+<p>From the result of PCA and correpounding plot, we can see that the votes variable and the eligible voters variable are strongly correlated, but the other two variables do not address much variation on other variables.</p>
+<pre class="r"><code>temp2 &lt;- temp%&gt;%select(-year, -state)
+temp2_scaled = data.frame(scale(temp2))
+ggplot(temp2_scaled, aes(x = rate, y = tuition))+geom_point()+coord_fixed()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>temp_pca&lt;-princomp(temp2_scaled)
+summary(temp_pca, loadings = T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3      Comp.4
+## Standard deviation     1.3954926 1.0267524 0.9786094 0.161405002
+## Proportion of Variance 0.4886398 0.2645241 0.2402993 0.006536838
+## Cumulative Proportion  0.4886398 0.7531639 0.9934632 1.000000000
+## 
+## Loadings:
+##                 Comp.1 Comp.2 Comp.3 Comp.4
+## tuition          0.106  0.535  0.838       
+## votes            0.703 -0.141         0.697
+## eligible_voters  0.703        -0.129 -0.696
+## rate                   -0.830  0.530 -0.173</code></pre>
+<pre class="r"><code>eigval&lt;-temp_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+
+ggplot()+geom_bar(aes(y=varprop,x=1:4),stat=&quot;identity&quot;)+xlab(&quot;&quot;)+geom_path(aes(y=varprop,x=1:4))+
+ geom_text(aes(x=1:4,y=varprop,label=round(varprop,2)),vjust=1,col=&quot;white&quot;,size=5)+
+ scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+ scale_x_continuous(breaks=1:10)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre class="r"><code>round(cumsum(eigval)/sum(eigval),2) </code></pre>
+<pre><code>## Comp.1 Comp.2 Comp.3 Comp.4 
+##   0.49   0.75   0.99   1.00</code></pre>
+<pre class="r"><code>eigval</code></pre>
+<pre><code>##     Comp.1     Comp.2     Comp.3     Comp.4 
+## 1.94739969 1.05422040 0.95767633 0.02605157</code></pre>
+<pre class="r"><code>ggplot()+geom_point(aes(temp_pca$scores[,1], temp_pca$scores[,2]))+xlab(&quot;PC1&quot;)+ylab(&quot;PC2&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+<pre class="r"><code>temp_pca$loadings[1:4,1:2]%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+ geom_vline(aes(xintercept=0),lty=2)+ylab(&quot;PC2&quot;)+xlab(&quot;PC1&quot;)+
+ geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&quot;red&quot;)+
+ geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-4.png" width="672" /></p>
+</div>

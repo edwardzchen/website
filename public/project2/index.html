@@ -1,0 +1,377 @@
+
+
+
+<p>c— title: ‘Project 2: Modeling, Testing, and Predicting’ author: “SDS348 Fall 2019” date: ’’ output: pdf_document: toc: yes html_document: toc: yes toc_float: collapsed: no smooth_scroll: yes —</p>
+<div id="modeling" class="section level1">
+<h1>Modeling</h1>
+<div id="instructions" class="section level2">
+<h2>Instructions</h2>
+<p>A knitted R Markdown document (as a PDF) and the raw R Markdown file (as .Rmd) should both be submitted to Canvas by 11:59pm on 11/24/2019. These two documents will be graded jointly, so they must be consistent (i.e., don’t change the R Markdown file without also updating the knitted document). Knit an html copy too, for later! In the .Rmd file for Project 2, you can copy the first code-chunk into your project .Rmd file to get better formatting. Notice that you can adjust the opts_chunk$set(…) above to set certain parameters if necessary to make the knitting cleaner (you can globally set the size of all plots, etc). I have gone ahead and set a few for you (such as disabling warnings and package-loading messges when knitting)!</p>
+<p>Like before, I envision your written text forming something of a narrative structure around your code/output. All results presented must have corresponding code. Any answers/results/plots etc. given without the corresponding R code that generated the result will not be graded. Furthermore, all code contained in your final project document should work properly. Please do not include any extraneous code or code which produces error messages. (Code which produces warnings is acceptable, as long as you understand what the warnings mean).</p>
+</div>
+<div id="find-data" class="section level2">
+<h2>Find data:</h2>
+<p>Find one dataset with at least 5 variables that wish to use to build model. At least one should be categorical (with 2-5 groups) and at least two should be numeric. Ideally, one of your variables will be binary (if not, you will need to create one by discretizing a numeric, which is workable but less than ideal). You will need a minimum of 40 observations (<em>at least</em> 10 observations for every explanatory variable you have, ideally 20+ observations/variable).</p>
+<p>It is perfectly fine to use either dataset (or the merged dataset, or a subset of your variables) from Project 1. However, you could also diversify your portfolio a bit by choosing a different dataset to work with (particularly if the variables did not reveal interesting associations in Project 1). The only requirement/restriction is that you may not use data from any examples we have done in class or lab. It would be a good idea to pick more cohesive data this time around (i.e., variables that you actually thing might have a relationship you would want to test). Think more along the lines of your Biostats project.</p>
+<p>Again, you can use data from anywhere you want (see bottom for resources)! If you want a quick way to see whether a built-in (R) dataset has binary and/or character (i.e., categorical) variables, check out this list: <a href="https://vincentarelbundock.github.io/Rdatasets/datasets.html" class="uri">https://vincentarelbundock.github.io/Rdatasets/datasets.html</a>.</p>
+<pre class="r"><code># data import and cleaning
+library(stats)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(sandwich)
+library(lmtest)
+library(MASS)
+library(plotROC)
+library(glmnet)
+
+
+googleplaystore&lt;-read_csv(&quot;~/Desktop/website/content/googleplaystore.csv&quot;)
+
+data &lt;- googleplaystore%&gt;%dplyr::select(App, Category, Rating, Reviews, Size, Installs, Type, Price)%&gt;%filter(Size != &quot;Varies with device&quot;)%&gt;%filter(str_detect(Size, pattern=&quot;M&quot;))%&gt;%separate(Size, into=&quot;Size&quot;, sep=&quot;M&quot;, convert = TRUE)%&gt;%filter(Category %in% c(&quot;MEDICAL&quot;,&quot;GAME&quot;,&quot;SPORTS&quot;))%&gt;%distinct(App, .keep_all = TRUE)%&gt;%na.omit()
+
+data &lt;- data%&gt;%mutate(y=as.numeric(Type==&quot;Paid&quot;)) # convert category to binary
+
+head(data)</code></pre>
+<pre><code>## # A tibble: 6 x 9
+## App Category Rating Reviews Size Installs Type Price y
+## &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;
+## 1 ROBLOX GAME 4.5 4447388 67 100,000,000+ Free 0 0
+## 2 Subway Surfers GAME 4.5 27722264 76 1,000,000,000+
+Free 0 0
+## 3 Candy Crush Saga GAME 4.4 22426677 74 500,000,000+
+Free 0 0
+## 4 Solitaire GAME 4.7 254258 23 10,000,000+ Free 0 0
+## 5 Bubble Shooter GAME 4.5 148897 46 10,000,000+ Free 0 0
+## 6 Hello Kitty Nail Salon GAME 4.2 369203 24 50,000,000+
+Free 0 0</code></pre>
+</div>
+<div id="guidelines-and-rubric" class="section level2">
+<h2>Guidelines and Rubric</h2>
+<ul>
+<li><strong>0. (5 pts)</strong> Introduce your dataset and each of your variables (or just your main variables if you have lots) in a paragraph.</li>
+</ul>
+<p><em>This data was found on kaggle and it is about the download information from google play store apps. Each app is an obervation, and we have many variables included, but we mainly focusing on the category, rating, reviews, size and type variables. The categroy indicates which category the app belongs, the rating is the overall user rating of the app when this data was collected, the reviews is the number of user review for the app, the size is just the size of the app for downloading, and type is a binary variable that represents either its a free app or a paid app. </em></p>
+<ul>
+<li><strong>1. (15 pts)</strong> Perform a MANOVA testing whether any of your numeric variables (or a subset of them, if including them all doesn’t make sense) show a mean difference across levels of one of your categorical variables (3). If they do, perform univariate ANOVAs to find response(s) showing a mean difference across groups (3), and perform post-hoc t tests to find which groups differ (3). Discuss the number of tests you have performed, calculate the probability of at least one type I error (if unadjusted), and adjust the significance level accordingly (bonferroni correction) before discussing significant differences (3). Briefly discuss assumptions and whether or not they are likely to have been met (2).</li>
+</ul>
+<pre class="r"><code># Perform a MANOVA on reviews and size, all numeric variables
+man1&lt;-manova(cbind(Reviews, Size)~Category, data=data)
+summary(man1)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## Category 2 0.1356 47.313 4 2602 &lt; 2.2e-16 ***
+## Residuals 1301
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code># Significant result, there is a mean differnece across levels of category
+# Run univariate ANOVAs 
+summary.aov(man1)</code></pre>
+<pre><code>## Response Reviews :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Category 2 1.0182e+14 5.0910e+13 12.001 6.849e-06 ***
+## Residuals 1301 5.5192e+15 4.2422e+12
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response Size :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Category 2 127139 63569 99.389 &lt; 2.2e-16 ***
+## Residuals 1301 832124 640
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code># Only significant result for size, not for rating
+# pair wise t-test for size
+pairwise.t.test(data$Reviews, data$Category, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$Reviews and data$Category 
+## 
+##         GAME    MEDICAL
+## MEDICAL 2.3e-05 -      
+## SPORTS  0.00094 0.56290
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code># the medical/game group and sports/game group differ
+pairwise.t.test(data$Size, data$Category, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$Size and data$Category 
+## 
+##         GAME   MEDICAL
+## MEDICAL &lt;2e-16 -      
+## SPORTS  &lt;2e-16 0.0039 
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code># all groups are differnt
+# 1 MANOVA, 2 ANOVA and 6 t tests, a should be using a = 0.05/9 = 0.0056
+# pari wise t-test with p value adj
+pairwise.t.test(data$Reviews, data$Category, p.adj = &quot;bonferroni&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$Reviews and data$Category 
+## 
+##         GAME    MEDICAL
+## MEDICAL 6.8e-05 -      
+## SPORTS  0.0028  1.0000 
+## 
+## P value adjustment method: bonferroni</code></pre>
+<pre class="r"><code># the game/medical group and game/sport group differ
+pairwise.t.test(data$Size, data$Category, p.adj = &quot;bonferroni&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$Size and data$Category 
+## 
+##         GAME   MEDICAL
+## MEDICAL &lt;2e-16 -      
+## SPORTS  &lt;2e-16 0.012  
+## 
+## P value adjustment method: bonferroni</code></pre>
+<pre class="r"><code># the game/medical and game/sports differ</code></pre>
+<p><em>A MANOVA was conducted to dertermine the effect of the Category(GAME, MEDICAL, SPORTS) on two independent variables(Reviews and Size). Signifcant results were found among the three categories of app on the two independent measures, with a p &lt; 0.0001. Univariate analyses of variance for each independent variable were conducted as follow-up test to the MANOVA, first without any p-value adjustment, and both ANOVA tests returned significant results, with p &lt; 0.0001, which means there is at least one mean difference in Reviews and Size. Post hoc analysis was performed conducting pairwise comparisons to determine which category differed in Reviews and Size. Except for the Medical/Sports group, all other categroies were found to differ significantly from each other in terms of Reviews and Size after adjusting for the p-value. A total numebr of 9 tests were conducted, including 1 MANOVA, 2 ANOVA and 6 pair wise t-tests, and the corresponding probability for at least one type I error is 0.0056. As for the assumptions of MANAOVA, this data could potentially violates the noramlity and equal variance assumptions, and it is difficult for us to test these assumptions. </em></p>
+<ul>
+<li><strong>2. (10 pts)</strong> Perform some kind of randomization test on your data (that makes sense). This can be anything you want! State null and alternative hypotheses, perform the test, and interpret the results (7). Create a plot visualizing the null distribution and the test statistic (3).</li>
+</ul>
+<pre class="r"><code># Null: there is no mean difference for size between game and sports category
+# Alternative: there is mean difference for size between game and sports category
+data_game &lt;- c(data$Size[data$Category == &quot;GAME&quot;])
+data_sports &lt;- c(data$Size[data$Category == &quot;SPORTS&quot;])
+rand &lt;- data.frame(category=c(rep(&quot;game&quot;, 830),rep(&quot;sports&quot;, 220)), size=c(data_game, data_sports))
+
+rand%&gt;%group_by(category)%&gt;%summarize(mean=mean(size))%&gt;%summarize(x=diff(mean))%&gt;%pull(x)</code></pre>
+<pre><code>## [1] -16.48313</code></pre>
+<pre class="r"><code>rand_dist&lt;-vector()
+
+for(i in 1:5000){
+  new&lt;-data.frame(size=sample(rand$size), category=rand$category)
+  rand_dist[i] &lt;- mean(new[new$category==&quot;game&quot;,]$size) - 
+                  mean(new[new$category==&quot;sports&quot;,]$size)
+}
+
+mean(rand_dist&lt; -16.48313)*2 #pvalue</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>hist(rand_dist) # Histogram of rand_dist, help understand why p-value is 0</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># the value is too extrem, but still exist</code></pre>
+<p><em>The goal is to test if there is a mean difference for size between game and sports app, and a p-value of 0 was returned from the randomization test, which indicates that such difference is too extrem thus did not appear even after 5000 times of sampling, thus we can conclude that we failed to reject the null hypothesis, and there is no mean difference for size between game and sports category. </em></p>
+<ul>
+<li><strong>3. (35 pts)</strong> Build a linear regression model predicting one of your response variables from at least 2 other variables, including their interaction. Mean-center any numeric variables involved in the interaction.</li>
+</ul>
+<pre class="r"><code># linear regression with interaction on one numeric and one categorical
+data$Reviews_c &lt;- data$Reviews - mean(data$Reviews) # mean centered, no longer needed
+data$Reviews_log &lt;- log(data$Reviews) # log transform instead of mean center
+fit&lt;-lm(Rating~Reviews_log*Category, data=data)
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = Rating ~ Reviews_log * Category, data =
+data)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -3.08447 -0.18338 0.05386 0.26695 1.03677
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 3.963234 0.048617 81.520 &lt; 2e-16 ***
+## Reviews_log 0.028075 0.004688 5.989 2.73e-09 ***
+## CategoryMEDICAL 0.104517 0.074947 1.395 0.163
+## CategorySPORTS 0.085348 0.095711 0.892 0.373
+## Reviews_log:CategoryMEDICAL -0.003960 0.011568 -0.342
+0.732
+## Reviews_log:CategorySPORTS -0.008167 0.010527 -0.776
+0.438
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 0.4739 on 1298 degrees of
+freedom
+## Multiple R-squared: 0.03613, Adjusted R-squared: 0.03242
+## F-statistic: 9.732 on 5 and 1298 DF, p-value: 3.854e-09</code></pre>
+<pre class="r"><code># plot of regression 
+data%&gt;%ggplot(aes(y = Rating, x = Reviews_log, color = Category))+geom_point()+geom_smooth(method = &#39;lm&#39;, se=F)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># assumptions
+shapiro.test(data$Rating) # normality violated</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  data$Rating
+## W = 0.85225, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>bptest(fit) # heteroskedasticity assumption violated</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 154.88, df = 5, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code># recompute use coeftest
+coeftest(fit, vcov=vcovHC(fit))</code></pre>
+<pre><code>##
+## t test of coefficients:
+##
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 3.9632338 0.0643881 61.5523 &lt; 2.2e-16 ***
+## Reviews_log 0.0280747 0.0056341 4.9830 7.105e-07 ***
+## CategoryMEDICAL 0.1045166 0.1316280 0.7940 0.4273
+## CategorySPORTS 0.0853484 0.1383167 0.6171 0.5373
+## Reviews_log:CategoryMEDICAL -0.0039599 0.0188692 -0.2099
+0.8338
+## Reviews_log:CategorySPORTS -0.0081669 0.0136758 -0.5972
+0.5505
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>(sum((data$Rating-mean(data$Rating))^2)-sum(fit$residuals^2))/sum((data$Rating-mean(data$Rating))^2)</code></pre>
+<pre><code>## [1] 0.03613473</code></pre>
+<pre><code>- Interpret the coefficient estimates (do not discuss significance) (10)</code></pre>
+<p><em>Since the original Review variable was extremly left skewed, the log transform was used on this variable. The intercept is the predicted value of Rating when review is 0 and the category is game. Reviews_log expalin a significant amount of variation in Rating, for every one log unit of review, there is an incrase in Rating that is less than 0.0001, on average. Being a category of medical would lead to a 0.105 increase in rating, on average, compared with game category. Being a category of sports would lead to a 0.085 increase in rating, on average, compared with game category. An one log unit increase in Reviews_log while under medical would lead to an average decrease of less than 0.004 in rating on average, and an one log unit increase in Reviews_log while under sports would lead to an average decrease of 0.008 in rating on average.</em></p>
+<pre><code>- Plot the regression using `ggplot()`. If your interaction is numeric by numeric, refer to code near the end of WS15 to make the plot. If you have 3 or more predictors, just chose two to plot for convenience. (7)
+- Check assumptions of linearity, normality, and homoskedasticity either graphically or using a hypothesis test (3)</code></pre>
+<p><em>From the plot of regression, it is difficult to tell if there is a claear linearity in Reviews_log and Rating. According to the shapiro normality test, a significant p-value was returned, thus the normality was violated as well.According to the bptest, a significant p-value was returned, thus the homoskedasticity assumption was violated as well. </em></p>
+<pre><code>- Regardless, recompute regression results with robust standard errors via `coeftest(..., vcov=vcovHC(...))`. Discuss significance of results, including any changes from before/after robust SEs if applicable. (7)
+- What proportion of the variation in the outcome does your model explain? (3)</code></pre>
+<p><em>0.0036</em></p>
+<pre><code>- Finally, rerun the regression but without interactions (just main effects); compare this with the interaction model and the null model using a likelihood ratio test (4)
+# skipped</code></pre>
+<ul>
+<li><strong>4. (5 pts)</strong> Rerun same regression model (with interaction), but this time compute bootstrapped standard errors. Discuss any changes you observe in SEs and p-values using these SEs compared to the original SEs and the robust SEs)</li>
+</ul>
+<pre class="r"><code># Booststrapped SEs
+samp_distn&lt;-replicate(5000, {
+ boot_dat&lt;-data[sample(nrow(data),replace=TRUE),]
+ fit&lt;-lm(Rating~Reviews_log*Category, data=boot_dat)
+ coef(fit)
+})
+
+samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>## (Intercept) Reviews_log CategoryMEDICAL CategorySPORTS
+Reviews_log:CategoryMEDICAL
+## 1 0.06395701 0.005599015 0.1297312 0.1353195 0.01862618
+## Reviews_log:CategorySPORTS
+## 1 0.013346</code></pre>
+<p><em>Compared to the original SEs, a larger standard error was returned, which indicates that this estimation using bootstrap may lead us to a larger estimates. </em></p>
+<ul>
+<li><strong>5. (40 pts)</strong> Perform a logistic regression predicting a binary categorical variable (if you don’t have one, make/get one) from at least two explanatory variables (interaction not necessary).</li>
+</ul>
+<pre class="r"><code># GLM on binary 
+data_no_app &lt;- data%&gt;%dplyr::select(-App, -Installs, -Price)
+fit3 &lt;- glm(y~., data=data_no_app, family=&quot;binomial&quot;)
+coeftest(fit3)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##                    Estimate  Std. Error z value Pr(&gt;|z|)
+## (Intercept)     -2.6566e+01  8.9434e+04 -0.0003   0.9998
+## CategoryMEDICAL -9.8695e-11  3.0217e+04  0.0000   1.0000
+## CategorySPORTS  -7.6979e-12  2.7968e+04  0.0000   1.0000
+## Rating           1.0576e-11  2.1010e+04  0.0000   1.0000
+## Reviews          8.1159e-19  5.1310e-03  0.0000   1.0000
+## Size            -1.4459e-13  4.1215e+02  0.0000   1.0000
+## TypePaid         5.3132e+01  3.2907e+04  0.0016   0.9987
+## Reviews_c                NA          NA      NA       NA
+## Reviews_log     -3.7256e-12  3.3518e+03  0.0000   1.0000</code></pre>
+<pre class="r"><code># Confusion Matrix
+probs &lt;- predict(fit3, type =&quot;response&quot;)
+table(predict=as.numeric(probs&gt;0.5),truth=data$y)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict    0    1  Sum
+##     0   1162    0 1162
+##     1      0  142  142
+##     Sum 1162  142 1304</code></pre>
+<pre class="r"><code># Density Plot
+data_no_app$logit&lt;-predict(fit3,type=&quot;link&quot;)
+data_no_app%&gt;%ggplot()+geom_density(aes(logit,color=Type,fill=Type), alpha=.4)+
+  theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab(&quot;predictor (logit)&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ROC Polt and AUC
+ROCplot&lt;-ggplot(data_no_app)+geom_roc(aes(d=y,m=probs), n.cuts=0) 
+ROCplot</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group AUC
+## 1     1    -1   1</code></pre>
+<pre class="r"><code># Diag function
+class_diag&lt;-function(probs,truth){
+ tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+ acc=sum(diag(tab))/sum(tab)
+ sens=tab[2,2]/colSums(tab)[2]
+ spec=tab[1,1]/colSums(tab)[1]
+ ppv=tab[2,2]/rowSums(tab)[2]
+ if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+ #CALCULATE EXACT AUC
+ ord&lt;-order(probs, decreasing=TRUE)
+ probs &lt;- probs[ord]; truth &lt;- truth[ord]
+ TPR=cumsum(truth)/max(1,sum(truth))
+ FPR=cumsum(!truth)/max(1,sum(!truth))
+ dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+ TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+ n &lt;- length(TPR)
+ auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+ data.frame(acc,sens,spec,ppv,auc)
+} 
+
+# 10-fold CV
+k=10
+
+data1&lt;-data_no_app[sample(nrow(data_no_app)),]
+folds&lt;-cut(seq(1:nrow(data_no_app)),breaks=k,labels=F)
+
+diags&lt;-NULL
+for(i in 1:k){
+  train&lt;-data1[folds!=i,] 
+  test&lt;-data1[folds==i,]
+  truth&lt;-test$y
+  
+  fit&lt;-glm(y~.,data=train,family=&quot;binomial&quot;)
+  probs&lt;-predict(fit,newdata = test,type=&quot;response&quot;)
+  
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+
+apply(diags,2,mean)</code></pre>
+<pre><code>##  acc sens spec  ppv  auc 
+##    1    1    1    1    1</code></pre>
+<pre><code>- Interpret coefficient estimates in context (10)</code></pre>
+<p><em>The intercept is the log-odds of being a free app when Rating and Reviews_log are 0. Going up 1 Rating increases log-odds by 0.5340, going up 1 Reviews_log decrease log-odds by 0.2142. </em></p>
+<pre><code>- Report a confusion matrix for your logistic regression (2)
+- Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) of your model (5)
+Accuracy: (1162+142)/(1162+142) = 1 
+Sensitivity: 142/142 = 1
+Specificity: 1162/1162 = 1
+PPV: 142/142 = 1</code></pre>
+<p><em>All of these results indicates that other variables from this data may not correctly or effectively predicting the outcome of whether it is a free app or a paid app, since all observations are correctly being indentified and characterized into there groups. This could also indicates that although from the origianl data, Type(paid or free) is a binary variable by nature, but it would not be influenced by any other factors, such as the price, category, or rating of that app. </em></p>
+<pre><code>- Using ggplot, plot density of log-odds (logit) by your binary outcome variable (3)
+- Generate an ROC curve (plot) and calculate AUC (either manually or with a package); interpret (10)</code></pre>
+<p><em>What we have here for the ROC plot could be considered as a perfect prediction, with FPR=0 and TPR=1, thus the corresponding AUC would be 1, just like we have calculated. </em></p>
+<pre><code>- Perform 10-fold (or repeated random sub-sampling) CV and report average out-of-sample Accuracy, Sensitivity, and Recall (10)</code></pre>
+<p><em>With the 10-fold Cross-Validation, the same result was returned as before, which indicates that from the same data sampling dose not change the fact that this binary varibale cannot be predicted from any of these explanatory variables. </em></p>
+<ul>
+<li><strong>6. (10 pts)</strong> Choose one variable you want to predict (can be one you used from before; either binary or continuous) and run a LASSO regression inputting all the rest of your variables as predictors. Choose lambda to give the simplest model whose accuracy is near that of the best (i.e., <code>lambda.1se</code>). Discuss which variables are retained. Perform 10-fold CV using this model: if response in binary, compare model’s out-of-sample accuracy to that of your logistic regression in part 5; if response is numeric, compare the residual standard error (at the bottom of the summary output, aka RMSE): lower is better fit!</li>
+</ul>
+<pre class="r"><code># Lasso
+data_no_y&lt;-data_no_app%&gt;%dplyr::select(-Type, -y, -Category)
+y&lt;-as.matrix(data$y)
+x&lt;-data_no_y%&gt;%scale%&gt;%as.matrix
+
+cv&lt;-cv.glmnet(x,y,family=&quot;binomial&quot;)
+lasso&lt;-glmnet(x,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 7 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                    s0
+## (Intercept) -6.984174
+## Rating       .       
+## Reviews      .       
+## Size         .       
+## Reviews_c    .       
+## Reviews_log  .       
+## logit        4.726954</code></pre>
+<p><em>The lasso test provides additional evidence to prove that none of these explanatory can be selected for a more accurate prediction. The only significant result, which is logit, is a variable that we created in the density plot section. All other variables failed to become a significant factor that could effectively predict the binary variable. </em></p>
+</div>
+</div>

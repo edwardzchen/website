@@ -2,4 +2,8 @@
 fatal: remote origin already exists.
 ]0;~/Desktop/websitewireless-10-145-164-117:website zhihaochen$ git add README.md[K[K[K[K[K[K[K[K[Knew_py.py
 fatal: pathspec 'new_py.py' did not match any files
-]0;~/Desktop/websitewireless-10-145-164-117:website zhihaochen$ 
+]0;~/Desktop/website[?1034hwireless-10-147-242-177:website zhihaochen$ git py[Kush oi[Krigin master
+Everything up-to-date
+]0;~/Desktop/website[?1034hwireless-10-147-242-177:website zhihaochen$ [Kwireless-10-147-242-177:website zhihaochen$ R.version.string
+bash: R.version.string: command not found
+git add . 
