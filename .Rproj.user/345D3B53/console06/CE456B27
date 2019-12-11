@@ -108,3 +108,18 @@ remote: Resolving deltas:   0% (0/34)[Kremote: Resolving deltas:   2% (1/34)[
 To https://github.com/edwardzchen/website.git
    41c4251..64f9261  master -> master
 ]0;~/Desktop/websitewireless-10-147-242-177:website zhihaochen$ add[K[K[Kgit add.[K .
+]0;~/Desktop/websitewireless-10-147-242-177:website zhihaochen$ git -[Kcommit [K -,[Km" "[C"a"d"d"[1P"[1P"[1P"A"d"d" "R"E"A"D"M"E"N"[1P"[C
+[master f8097f4] Add README
+ 2 files changed, 34 insertions(+), 1 deletion(-)
+ create mode 100755 README.pages
+]0;~/Desktop/websitewireless-10-147-242-177:website zhihaochen$ git push origin master
+Enumerating objects: 12, done.
+Counting objects:   8% (1/12)   Counting objects:  16% (2/12)   Counting objects:  25% (3/12)   Counting objects:  33% (4/12)   Counting objects:  41% (5/12)   Counting objects:  50% (6/12)   Counting objects:  58% (7/12)   Counting objects:  66% (8/12)   Counting objects:  75% (9/12)   Counting objects:  83% (10/12)   Counting objects:  91% (11/12)   Counting objects: 100% (12/12)   Counting objects: 100% (12/12), done.
+Delta compression using up to 8 threads
+Compressing objects:  14% (1/7)   Compressing objects:  28% (2/7)   Compressing objects:  42% (3/7)   Compressing objects:  57% (4/7)   Compressing objects:  71% (5/7)   Compressing objects:  85% (6/7)   Compressing objects: 100% (7/7)   Compressing objects: 100% (7/7), done.
+Writing objects:  14% (1/7)   Writing objects:  28% (2/7)   Writing objects:  42% (3/7)   Writing objects:  57% (4/7)   Writing objects:  71% (5/7)   Writing objects:  85% (6/7)   Writing objects: 100% (7/7)   Writing objects: 100% (7/7), 38.49 KiB | 12.83 MiB/s, done.
+Total 7 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas:   0% (0/2)[Kremote: Resolving deltas:  50% (1/2)[Kremote: Resolving deltas: 100% (2/2)[Kremote: Resolving deltas: 100% (2/2), completed with 2 local objects.[K
+To https://github.com/edwardzchen/website.git
+   64f9261..f8097f4  master -> master
+]0;~/Desktop/websitewireless-10-147-242-177:website zhihaochen$ git add .

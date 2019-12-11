@@ -1,15 +1,7 @@
-c---
+---
 title: 'Project 2: Modeling, Testing, and Predicting'
-author: "SDS348 Fall 2019"
-date: ''
-output:
-  pdf_document:
-    toc: yes
-  html_document:
-    toc: yes
-    toc_float:
-      collapsed: no
-      smooth_scroll: yes
+author: "Zhihao Chen zc4284"
+output: html_document
 ---
 
 ```{r setup, include=FALSE}

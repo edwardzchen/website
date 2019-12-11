@@ -1,7 +1,11 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting'
+author: "Zhihao Chen zc4284"
+output: html_document
+---
 
 
 
-<p>c— title: ‘Project 2: Modeling, Testing, and Predicting’ author: “SDS348 Fall 2019” date: ’’ output: pdf_document: toc: yes html_document: toc: yes toc_float: collapsed: no smooth_scroll: yes —</p>
 <div id="modeling" class="section level1">
 <h1>Modeling</h1>
 <pre class="r"><code># data import and cleaning
@@ -239,9 +243,9 @@ samp_distn&lt;-replicate(5000, {
 samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
 <pre><code>## (Intercept) Reviews_log CategoryMEDICAL CategorySPORTS
 Reviews_log:CategoryMEDICAL
-## 1 0.06435368 0.00562728 0.1291261 0.136803 0.01849381
+## 1 0.06395323 0.005595456 0.1302019 0.1360796 0.01879512
 ## Reviews_log:CategorySPORTS
-## 1 0.01351459</code></pre>
+## 1 0.01340119</code></pre>
 <p><em>Compared to the original SEs, a larger standard error was returned, which indicates that this estimation using bootstrap may lead us to a larger estimates. </em></p>
 <ul>
 <li><strong>5. (40 pts)</strong> Perform a logistic regression predicting a binary categorical variable (if you don’t have one, make/get one) from at least two explanatory variables (interaction not necessary).</li>

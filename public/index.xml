@@ -80,22 +80,21 @@ Follow the following steps:
     </item>
     
     <item>
-      <title></title>
-      <link>/project2/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/project2/</guid>
-      <description>c— title: ‘Project 2: Modeling, Testing, and Predicting’ author: “SDS348 Fall 2019” date: ’’ output: pdf_document: toc: yes html_document: toc: yes toc_float: collapsed: no smooth_scroll: yes —
-Modeling # data import and cleaning library(stats) library(tidyverse) library(dplyr) library(ggplot2) library(sandwich) library(lmtest) library(MASS) library(plotROC) library(glmnet) googleplaystore&amp;lt;-read_csv(&amp;quot;~/Desktop/website/content/googleplaystore.csv&amp;quot;) data &amp;lt;- googleplaystore%&amp;gt;%dplyr::select(App, Category, Rating, Reviews, Size, Installs, Type, Price)%&amp;gt;%filter(Size != &amp;quot;Varies with device&amp;quot;)%&amp;gt;%filter(str_detect(Size, pattern=&amp;quot;M&amp;quot;))%&amp;gt;%separate(Size, into=&amp;quot;Size&amp;quot;, sep=&amp;quot;M&amp;quot;, convert = TRUE)%&amp;gt;%filter(Category %in% c(&amp;quot;MEDICAL&amp;quot;,&amp;quot;GAME&amp;quot;,&amp;quot;SPORTS&amp;quot;))%&amp;gt;%distinct(App, .keep_all = TRUE)%&amp;gt;%na.omit() data &amp;lt;- data%&amp;gt;%mutate(y=as.</description>
-    </item>
-    
-    <item>
-      <title>Project1-1</title>
+      <title>Project 1: Data Wrangling and Exploratory Analysis</title>
       <link>/project1/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/project1/</guid>
       <description>0. Introduction The first data was called US voter turnout, which includes number of age-eligible voters versus total votes counted by state and year. The second data was called US average tuition, which includes the avrage tuition by state and year. Both of these data were found on the github rfordatascience website, and they are interesting becasue I think there might be a potential correlation between the voter turnout and college tuition in some area of the US.</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>Modeling # data import and cleaning library(stats) library(tidyverse) library(dplyr) library(ggplot2) library(sandwich) library(lmtest) library(MASS) library(plotROC) library(glmnet) googleplaystore&amp;lt;-read_csv(&amp;quot;~/Desktop/website/content/googleplaystore.csv&amp;quot;) data &amp;lt;- googleplaystore%&amp;gt;%dplyr::select(App, Category, Rating, Reviews, Size, Installs, Type, Price)%&amp;gt;%filter(Size != &amp;quot;Varies with device&amp;quot;)%&amp;gt;%filter(str_detect(Size, pattern=&amp;quot;M&amp;quot;))%&amp;gt;%separate(Size, into=&amp;quot;Size&amp;quot;, sep=&amp;quot;M&amp;quot;, convert = TRUE)%&amp;gt;%filter(Category %in% c(&amp;quot;MEDICAL&amp;quot;,&amp;quot;GAME&amp;quot;,&amp;quot;SPORTS&amp;quot;))%&amp;gt;%distinct(App, .keep_all = TRUE)%&amp;gt;%na.omit() data &amp;lt;- data%&amp;gt;%mutate(y=as.numeric(Type==&amp;quot;Paid&amp;quot;)) # convert category to binary head(data) ## # A tibble: 6 x 9 ## App Category Rating Reviews Size Installs Type Price y ## &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;dbl&amp;gt; ## 1 ROBLOX GAME 4.</description>
     </item>
     
   </channel>
