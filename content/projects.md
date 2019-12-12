@@ -9,8 +9,10 @@ title: Projects
 ---
 ## Projects 
 
-Here are some projects I have been working on:
+##### Here are some R_projects I have been working on:
 
-- [Project 1](/Project1/)
+- [R_Project 1: Data Wrangling and Exploratory Analysis](/Project1/)
 
-- [Project 2](/Project2/)
+- [R_Project 2: Modeling, Inference, Prediction](/Project2/)
+
+

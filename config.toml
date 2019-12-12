@@ -1,6 +1,6 @@
 baseurl = "/"
 languageCode = "en-US"
-title = "Edward Chen"
+title = "Zhihao Chen"
 # Enable comments by entering your Disqus shortname
 disqusShortname = ""
 # Enable Google Analytics by entering your tracking code
@@ -38,5 +38,5 @@ theme = "hugo-sustain"
 [[menu.main]]
   name = "resume"
   identifier = "resume"
-  weight = 300
+  weight = 400
   url = "/resume/"

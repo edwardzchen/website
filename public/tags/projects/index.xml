@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>projects on Edward Chen</title>
+    <title>projects on Zhihao Chen</title>
     <link>/tags/projects/</link>
-    <description>Recent content in projects on Edward Chen</description>
+    <description>Recent content in projects on Zhihao Chen</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
     <lastBuildDate>Sun, 02 Oct 2016 22:55:05 -0400</lastBuildDate>
@@ -17,9 +17,8 @@
       <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
       
       <guid>/projects/</guid>
-      <description>Projects Here are some projects I have been working on:
-  Project 1
-  Project 2
+      <description>Projects Here are some R_projects I have been working on:   R_Project 1: Data Wrangling and Exploratory Analysis
+  R_Project 2: Modeling, Inference, Prediction
   </description>
     </item>
     
