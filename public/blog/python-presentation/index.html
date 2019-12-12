@@ -7,7 +7,7 @@
     <meta name="author" content="Zhihao Chen" />
     <meta name="description" content="This is a personal website designed as an expreiment. ">
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
-    <title>Hello R Markdown</title>
+    <title>Python presentation</title>
     <meta name="generator" content="Hugo 0.60.1" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
@@ -56,19 +56,13 @@
       <div class="container">
         <div class="blog-post">
           <h3>
-            <strong><a href="/blog/2015-07-23-r-rmarkdown/">Hello R Markdown</a></strong>
+            <strong><a href="/blog/python-presentation/">Python presentation</a></strong>
           </h3>
         </div>
         <div class="blog-title">
           <h4>
-          July 23, 2015
+          December 12, 2019
             &nbsp;&nbsp;
-            
-            <span class="label label-success">R Markdown</span>
-            
-            <span class="label label-success">plot</span>
-            
-            <span class="label label-success">regression</span>
             
           </h4>
         </div>
@@ -78,45 +72,24 @@
               
 
 
-<div id="r-markdown" class="section level1">
-<h1>R Markdown</h1>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>You can embed an R code chunk like this:</p>
-<pre class="r"><code>summary(cars)
-##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00
-fit &lt;- lm(dist ~ speed, data = cars)
-fit
-## 
-## Call:
-## lm(formula = dist ~ speed, data = cars)
-## 
-## Coefficients:
-## (Intercept)        speed  
-##     -17.579        3.932</code></pre>
-</div>
-<div id="including-plots" class="section level1">
-<h1>Including Plots</h1>
-<p>You can also embed plots. See Figure <a href="#fig:pie">1</a> for example:</p>
-<pre class="r"><code>par(mar = c(0, 1, 0, 1))
-pie(
-  c(280, 60, 20),
-  c(&#39;Sky&#39;, &#39;Sunny side of pyramid&#39;, &#39;Shady side of pyramid&#39;),
-  col = c(&#39;#0292D8&#39;, &#39;#F7EA39&#39;, &#39;#C4B632&#39;),
-  init.angle = -50, border = NA
-)</code></pre>
-<div class="figure"><span id="fig:pie"></span>
-<img src="/blog/2015-07-23-r-rmarkdown_files/figure-html/pie-1.png" alt="A fancy pie chart." width="672" />
-<p class="caption">
-Figure 1: A fancy pie chart.
-</p>
-</div>
-</div>
+<pre class="python"><code># Find all 3-mers in these two sequences
+my_seq1 = &quot;ATCATCATG&quot;
+my_seq2 = &quot;CAGCCCAATCAGGCTCTACTGCCACTAAACTTACGCAGGATATATTTACGCCGACGTACT&quot;
+
+def count_3mers(string):
+    theDic = {}
+    length = len(string) - 2
+    for i in range(length):
+        thestring = string[i:i+3]
+        if not thestring in theDic:
+            theDic[thestring] = 0
+        theDic[thestring] += 1
+    return theDic
+
+print(&quot;All 3mers in the first sequence: &quot;,count_3mers(my_seq1))</code></pre>
+<pre><code>## (&#39;All 3mers in the first sequence: &#39;, {&#39;ATG&#39;: 1, &#39;CAT&#39;: 2, &#39;ATC&#39;: 2, &#39;TCA&#39;: 2})</code></pre>
+<pre class="python"><code>print(&quot;All 3mers in the second sequence: &quot;,count_3mers(my_seq2))</code></pre>
+<pre><code>## (&#39;All 3mers in the second sequence: &#39;, {&#39;CTT&#39;: 1, &#39;AAA&#39;: 1, &#39;ATC&#39;: 1, &#39;AAC&#39;: 1, &#39;ATA&#39;: 2, &#39;AGG&#39;: 2, &#39;CTC&#39;: 1, &#39;AGC&#39;: 1, &#39;AAT&#39;: 1, &#39;ATT&#39;: 1, &#39;CTG&#39;: 1, &#39;CTA&#39;: 2, &#39;ACT&#39;: 4, &#39;CAC&#39;: 1, &#39;ACG&#39;: 3, &#39;CAA&#39;: 1, &#39;CCA&#39;: 2, &#39;CCG&#39;: 1, &#39;CCC&#39;: 1, &#39;TAT&#39;: 2, &#39;CGA&#39;: 1, &#39;CAG&#39;: 3, &#39;TCT&#39;: 1, &#39;GAT&#39;: 1, &#39;TTT&#39;: 1, &#39;TGC&#39;: 1, &#39;GGA&#39;: 1, &#39;TAA&#39;: 1, &#39;GGC&#39;: 1, &#39;TAC&#39;: 4, &#39;TTA&#39;: 2, &#39;GAC&#39;: 1, &#39;CGT&#39;: 1, &#39;TCA&#39;: 1, &#39;GCA&#39;: 1, &#39;GTA&#39;: 1, &#39;GCC&#39;: 3, &#39;GCT&#39;: 1, &#39;CGC&#39;: 2})</code></pre>
 
               <hr>
               <div class="related-posts">

@@ -1,0 +1,30 @@
+---
+title: Python presentation
+author: Zhihao Chen
+date: '2019-12-12'
+slug: python-presentation
+categories: []
+tags: []
+description: ''
+---
+
+```{python}
+# Find all 3-mers in these two sequences
+my_seq1 = "ATCATCATG"
+my_seq2 = "CAGCCCAATCAGGCTCTACTGCCACTAAACTTACGCAGGATATATTTACGCCGACGTACT"
+
+def count_3mers(string):
+    theDic = {}
+    length = len(string) - 2
+    for i in range(length):
+        thestring = string[i:i+3]
+        if not thestring in theDic:
+            theDic[thestring] = 0
+        theDic[thestring] += 1
+    return theDic
+
+print("All 3mers in the first sequence: ",count_3mers(my_seq1))
+
+print("All 3mers in the second sequence: ",count_3mers(my_seq2))
+```
+

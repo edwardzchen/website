@@ -1,0 +1,30 @@
+---
+title: Python presentation
+author: Zhihao Chen
+date: '2019-12-12'
+slug: python-presentation
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<pre class="python"><code># Find all 3-mers in these two sequences
+my_seq1 = &quot;ATCATCATG&quot;
+my_seq2 = &quot;CAGCCCAATCAGGCTCTACTGCCACTAAACTTACGCAGGATATATTTACGCCGACGTACT&quot;
+
+def count_3mers(string):
+    theDic = {}
+    length = len(string) - 2
+    for i in range(length):
+        thestring = string[i:i+3]
+        if not thestring in theDic:
+            theDic[thestring] = 0
+        theDic[thestring] += 1
+    return theDic
+
+print(&quot;All 3mers in the first sequence: &quot;,count_3mers(my_seq1))</code></pre>
+<pre><code>## (&#39;All 3mers in the first sequence: &#39;, {&#39;ATG&#39;: 1, &#39;CAT&#39;: 2, &#39;ATC&#39;: 2, &#39;TCA&#39;: 2})</code></pre>
+<pre class="python"><code>print(&quot;All 3mers in the second sequence: &quot;,count_3mers(my_seq2))</code></pre>
+<pre><code>## (&#39;All 3mers in the second sequence: &#39;, {&#39;CTT&#39;: 1, &#39;AAA&#39;: 1, &#39;ATC&#39;: 1, &#39;AAC&#39;: 1, &#39;ATA&#39;: 2, &#39;AGG&#39;: 2, &#39;CTC&#39;: 1, &#39;AGC&#39;: 1, &#39;AAT&#39;: 1, &#39;ATT&#39;: 1, &#39;CTG&#39;: 1, &#39;CTA&#39;: 2, &#39;ACT&#39;: 4, &#39;CAC&#39;: 1, &#39;ACG&#39;: 3, &#39;CAA&#39;: 1, &#39;CCA&#39;: 2, &#39;CCG&#39;: 1, &#39;CCC&#39;: 1, &#39;TAT&#39;: 2, &#39;CGA&#39;: 1, &#39;CAG&#39;: 3, &#39;TCT&#39;: 1, &#39;GAT&#39;: 1, &#39;TTT&#39;: 1, &#39;TGC&#39;: 1, &#39;GGA&#39;: 1, &#39;TAA&#39;: 1, &#39;GGC&#39;: 1, &#39;TAC&#39;: 4, &#39;TTA&#39;: 2, &#39;GAC&#39;: 1, &#39;CGT&#39;: 1, &#39;TCA&#39;: 1, &#39;GCA&#39;: 1, &#39;GTA&#39;: 1, &#39;GCC&#39;: 3, &#39;GCT&#39;: 1, &#39;CGC&#39;: 2})</code></pre>

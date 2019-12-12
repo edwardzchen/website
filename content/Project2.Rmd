@@ -45,11 +45,11 @@ data <- data%>%mutate(y=as.numeric(Type=="Paid")) # convert category to binary
 head(data)
 ```
 
-- **0. (5 pts)** Introduce your dataset and each of your variables (or just your main variables if you have lots) in a paragraph.
+- **0.** Introduce your dataset and each of your variables (or just your main variables if you have lots) in a paragraph.
 
 *This data was found on kaggle and it is about the download information from google play store apps. Each app is an obervation, and we have many variables included, but we mainly focusing on the category, rating, reviews, size and type variables. The categroy indicates which category the app belongs, the rating is the overall user rating of the app when this data was collected, the reviews is the number of user review for the app, the size is just the size of the app for downloading, and type is a binary variable that represents either its a free app or a paid app. *
 
-- **1. (15 pts)** Perform a MANOVA testing whether any of your numeric variables (or a subset of them, if including them all doesn't make sense) show a mean difference across levels of one of your categorical variables (3). If they do, perform univariate ANOVAs to find response(s) showing a mean difference across groups (3), and perform post-hoc t tests to find which groups differ (3). Discuss the number of tests you have performed, calculate the probability of at least one type I error (if unadjusted), and adjust the significance level accordingly (bonferroni correction) before discussing significant differences (3). Briefly discuss assumptions and whether or not they are likely to have been met (2).
+- **1. ** Perform a MANOVA testing whether any of your numeric variables (or a subset of them, if including them all doesn't make sense) show a mean difference across levels of one of your categorical variables. If they do, perform univariate ANOVAs to find response(s) showing a mean difference across groups, and perform post-hoc t tests to find which groups differ. Discuss the number of tests you have performed, calculate the probability of at least one type I error (if unadjusted), and adjust the significance level accordingly (bonferroni correction) before discussing significant differences. Briefly discuss assumptions and whether or not they are likely to have been met.
 
 ```{r}
 # Perform a MANOVA on reviews and size, all numeric variables
@@ -73,7 +73,7 @@ pairwise.t.test(data$Size, data$Category, p.adj = "bonferroni")
 ```
 *A MANOVA was conducted to dertermine the effect of the Category(GAME, MEDICAL, SPORTS) on two independent variables(Reviews and Size). Signifcant results were found among the three categories of app on the two independent measures, with a p < 0.0001. Univariate analyses of variance for each independent variable were conducted as follow-up test to the MANOVA, first without any p-value adjustment, and both ANOVA tests returned significant results, with p < 0.0001, which means there is at least one mean difference in Reviews and Size. Post hoc analysis was performed conducting pairwise comparisons to determine which category differed in Reviews and Size. Except for the Medical/Sports group, all other categroies were found to differ significantly from each other in terms of Reviews and Size after adjusting for the p-value. A total numebr of 9 tests were conducted, including 1 MANOVA, 2 ANOVA and 6 pair wise t-tests, and the corresponding probability for at least one type I error is 0.0056. As for the assumptions of MANAOVA, this data could potentially violates the noramlity and equal variance assumptions, and it is difficult for us to test these assumptions. *
 
-- **2. (10 pts)** Perform some kind of randomization test on your data (that makes sense). This can be anything you want! State null and alternative hypotheses, perform the test, and interpret the results (7). Create a plot visualizing the null distribution and the test statistic (3).
+- **2. ** Perform some kind of randomization test on your data (that makes sense). This can be anything you want! State null and alternative hypotheses, perform the test, and interpret the results. Create a plot visualizing the null distribution and the test statistic.
 
 ```{r}
 # Null: there is no mean difference for size between game and sports category
@@ -99,7 +99,7 @@ hist(rand_dist) # Histogram of rand_dist, help understand why p-value is 0
 
 *The goal is to test if there is a mean difference for size between game and sports app, and a p-value of 0 was returned from the randomization test, which indicates that such difference is too extrem thus did not appear even after 5000 times of sampling, thus we can conclude that we failed to reject the null hypothesis, and there is no mean difference for size between game and sports category. *
 
-- **3. (35 pts)** Build a linear regression model predicting one of your response variables from at least 2 other variables, including their interaction. Mean-center any numeric variables involved in the interaction.
+- **3. ** Build a linear regression model predicting one of your response variables from at least 2 other variables, including their interaction. Mean-center any numeric variables involved in the interaction.
 
 ```{r}
 # linear regression with interaction on one numeric and one categorical
@@ -120,21 +120,21 @@ coeftest(fit, vcov=vcovHC(fit))
 (sum((data$Rating-mean(data$Rating))^2)-sum(fit$residuals^2))/sum((data$Rating-mean(data$Rating))^2)
 ```
 
-    - Interpret the coefficient estimates (do not discuss significance) (10)
+    - Interpret the coefficient estimates (do not discuss significance)
 *Since the original Review variable was extremly left skewed, the log transform was used on this variable. The intercept is the predicted value of Rating when review is 0 and the category is game. Reviews_log expalin a significant amount of variation in Rating, for every one log unit of review, there is an incrase in Rating that is less than 0.0001, on average. Being a category of medical would lead to a 0.105 increase in rating, on average, compared with game category. Being a category of sports would lead to a 0.085 increase in rating, on average, compared with game category. An one log unit increase in Reviews_log while under medical would lead to an average decrease of less than 0.004 in rating on average, and an one log unit increase in Reviews_log while under sports would lead to an average decrease of 0.008 in rating on average.*
   
-    - Plot the regression using `ggplot()`. If your interaction is numeric by numeric, refer to code near the end of WS15 to make the plot. If you have 3 or more predictors, just chose two to plot for convenience. (7)
-    - Check assumptions of linearity, normality, and homoskedasticity either graphically or using a hypothesis test (3)
+    - Plot the regression using `ggplot()`. If your interaction is numeric by numeric, refer to code near the end of WS15 to make the plot. If you have 3 or more predictors, just chose two to plot for convenience.
+    - Check assumptions of linearity, normality, and homoskedasticity either graphically or using a hypothesis test 
 *From the plot of regression, it is difficult to tell if there is a claear linearity in Reviews_log and Rating. According to the shapiro normality test, a significant p-value was returned, thus the normality was violated as well.According to the bptest, a significant p-value was returned, thus the homoskedasticity assumption was violated as well. *
 
-    - Regardless, recompute regression results with robust standard errors via `coeftest(..., vcov=vcovHC(...))`. Discuss significance of results, including any changes from before/after robust SEs if applicable. (7)
-    - What proportion of the variation in the outcome does your model explain? (3)
+    - Regardless, recompute regression results with robust standard errors via `coeftest(..., vcov=vcovHC(...))`. Discuss significance of results, including any changes from before/after robust SEs if applicable.
+    - What proportion of the variation in the outcome does your model explain?
 *0.0036*
 
-    - Finally, rerun the regression but without interactions (just main effects); compare this with the interaction model and the null model using a likelihood ratio test (4)
+    - Finally, rerun the regression but without interactions (just main effects); compare this with the interaction model and the null model using a likelihood ratio test
     # skipped
 
-- **4. (5 pts)** Rerun same regression model (with interaction), but this time compute bootstrapped standard errors. Discuss any changes you observe in SEs and p-values using these SEs compared to the original SEs and the robust SEs)
+- **4. ** Rerun same regression model (with interaction), but this time compute bootstrapped standard errors. Discuss any changes you observe in SEs and p-values using these SEs compared to the original SEs and the robust SEs)
 
 ```{r}
 # Booststrapped SEs
@@ -149,7 +149,7 @@ samp_distn%>%t%>%as.data.frame%>%summarize_all(sd)
 
 *Compared to the original SEs, a larger standard error was returned, which indicates that this estimation using bootstrap may lead us to a larger estimates. *
 
-- **5. (40 pts)** Perform a logistic regression predicting a binary categorical variable (if you don't have one, make/get one) from at least two explanatory variables (interaction not necessary). 
+- **5. ** Perform a logistic regression predicting a binary categorical variable (if you don't have one, make/get one) from at least two explanatory variables (interaction not necessary). 
 
 ```{r}
 # GLM on binary 
@@ -212,25 +212,25 @@ for(i in 1:k){
 apply(diags,2,mean)
 ```
 
-    - Interpret coefficient estimates in context (10)
+    - Interpret coefficient estimates in context
 *The intercept is the log-odds of being a free app when Rating and Reviews_log are 0. Going up 1 Rating increases log-odds by 0.5340, going up 1 Reviews_log decrease log-odds by 0.2142. *
 
-    - Report a confusion matrix for your logistic regression (2)
-    - Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) of your model (5)
+    - Report a confusion matrix for your logistic regression
+    - Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) of your model
     Accuracy: (1162+142)/(1162+142) = 1 
     Sensitivity: 142/142 = 1
     Specificity: 1162/1162 = 1
     PPV: 142/142 = 1
 *All of these results indicates that other variables from this data may not correctly or effectively predicting the outcome of whether it is a free app or a paid app, since all observations are correctly being indentified and characterized into there groups. This could also indicates that although from the origianl data, Type(paid or free) is a binary variable by nature, but it would not be influenced by any other factors, such as the price, category, or rating of that app. *
 
-    - Using ggplot, plot density of log-odds (logit) by your binary outcome variable (3)
-    - Generate an ROC curve (plot) and calculate AUC (either manually or with a package); interpret (10)
+    - Using ggplot, plot density of log-odds (logit) by your binary outcome variable
+    - Generate an ROC curve (plot) and calculate AUC (either manually or with a package); interpret
 *What we have here for the ROC plot could be considered as a perfect prediction, with FPR=0 and TPR=1, thus the corresponding AUC would be 1, just like we have calculated. *
 
-    - Perform 10-fold (or repeated random sub-sampling) CV and report average out-of-sample Accuracy, Sensitivity, and Recall (10)
+    - Perform 10-fold (or repeated random sub-sampling) CV and report average out-of-sample Accuracy, Sensitivity, and Recall
 *With the 10-fold Cross-Validation, the same result was returned as before, which indicates that from the same data sampling dose not change the fact that this binary varibale cannot be predicted from any of these explanatory variables. *
 
-- **6. (10 pts)** Choose one variable you want to predict (can be one you used from before; either binary or continuous) and run a LASSO regression inputting all the rest of your variables as predictors. Choose lambda to give the simplest model whose accuracy is near that of the best (i.e., `lambda.1se`). Discuss which variables are retained. Perform 10-fold CV using this model: if response in binary, compare model's out-of-sample accuracy to that of your logistic regression in part 5; if response is numeric, compare the residual standard error (at the bottom of the summary output, aka RMSE): lower is better fit!
+- **6. ** Choose one variable you want to predict (can be one you used from before; either binary or continuous) and run a LASSO regression inputting all the rest of your variables as predictors. Choose lambda to give the simplest model whose accuracy is near that of the best (i.e., `lambda.1se`). Discuss which variables are retained. Perform 10-fold CV using this model: if response in binary, compare model's out-of-sample accuracy to that of your logistic regression in part 5; if response is numeric, compare the residual standard error (at the bottom of the summary output, aka RMSE): lower is better fit!
 
 ```{r}
 # Lasso

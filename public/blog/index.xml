@@ -6,65 +6,18 @@
     <description>Recent content in Blogs on Edward Chen</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 23 Jul 2015 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Thu, 12 Dec 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Hello R Markdown</title>
-      <link>/blog/2015-07-23-r-rmarkdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      <title>Python presentation</title>
+      <link>/blog/python-presentation/</link>
+      <pubDate>Thu, 12 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>/blog/2015-07-23-r-rmarkdown/</guid>
-      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
-    </item>
-    
-    <item>
-      <title>Creating a New Theme</title>
-      <link>/blog/creating-a-new-theme/</link>
-      <pubDate>Sun, 28 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/creating-a-new-theme/</guid>
-      <description>Introduction This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&#39;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&#39;t cover using CSS to style your theme.
-We&#39;ll start with creating a new site with a very basic template.</description>
-    </item>
-    
-    <item>
-      <title>(Hu)go Template Primer</title>
-      <link>/blog/goisforlovers/</link>
-      <pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/goisforlovers/</guid>
-      <description>Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates.
-This document is a brief primer on using go templates.</description>
-    </item>
-    
-    <item>
-      <title>Getting Started with Hugo</title>
-      <link>/blog/hugoisforlovers/</link>
-      <pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/hugoisforlovers/</guid>
-      <description>Step 1. Install Hugo Goto hugo releases and download the appropriate version for your os and architecture.
-Save it somewhere specific as we will be using it in the next step.
-More complete instructions are available at installing hugo
-Step 2. Build the Docs Hugo has its own example site which happens to also be the documentation site you are reading right now.
-Follow the following steps:
- Clone the hugo repository Go into the repo Run hugo in server mode and build the docs Open your browser to http://localhost:1313  Corresponding pseudo commands:</description>
-    </item>
-    
-    <item>
-      <title>Migrate to Hugo from Jekyll</title>
-      <link>/blog/migrate-from-jekyll/</link>
-      <pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/migrate-from-jekyll/</guid>
-      <description>Move static content to static Jekyll has a rule that any directory not starting with _ will be copied as-is to the _site output. Hugo keeps all static content under static. You should therefore move it all there. With Jekyll, something that looked like
-▾ &amp;lt;root&amp;gt;/ ▾ images/ logo.png  should become
-▾ &amp;lt;root&amp;gt;/ ▾ static/ ▾ images/ logo.png  Additionally, you&#39;ll want any files that should reside at the root (such as CNAME) to be moved to static.</description>
+      <guid>/blog/python-presentation/</guid>
+      <description> # Find all 3-mers in these two sequences my_seq1 = &amp;quot;ATCATCATG&amp;quot; my_seq2 = &amp;quot;CAGCCCAATCAGGCTCTACTGCCACTAAACTTACGCAGGATATATTTACGCCGACGTACT&amp;quot; def count_3mers(string): theDic = {} length = len(string) - 2 for i in range(length): thestring = string[i:i+3] if not thestring in theDic: theDic[thestring] = 0 theDic[thestring] += 1 return theDic print(&amp;quot;All 3mers in the first sequence: &amp;quot;,count_3mers(my_seq1)) ## (&amp;#39;All 3mers in the first sequence: &amp;#39;, {&amp;#39;ATG&amp;#39;: 1, &amp;#39;CAT&amp;#39;: 2, &amp;#39;ATC&amp;#39;: 2, &amp;#39;TCA&amp;#39;: 2}) print(&amp;quot;All 3mers in the second sequence: &amp;quot;,count_3mers(my_seq2)) ## (&amp;#39;All 3mers in the second sequence: &amp;#39;, {&amp;#39;CTT&amp;#39;: 1, &amp;#39;AAA&amp;#39;: 1, &amp;#39;ATC&amp;#39;: 1, &amp;#39;AAC&amp;#39;: 1, &amp;#39;ATA&amp;#39;: 2, &amp;#39;AGG&amp;#39;: 2, &amp;#39;CTC&amp;#39;: 1, &amp;#39;AGC&amp;#39;: 1, &amp;#39;AAT&amp;#39;: 1, &amp;#39;ATT&amp;#39;: 1, &amp;#39;CTG&amp;#39;: 1, &amp;#39;CTA&amp;#39;: 2, &amp;#39;ACT&amp;#39;: 4, &amp;#39;CAC&amp;#39;: 1, &amp;#39;ACG&amp;#39;: 3, &amp;#39;CAA&amp;#39;: 1, &amp;#39;CCA&amp;#39;: 2, &amp;#39;CCG&amp;#39;: 1, &amp;#39;CCC&amp;#39;: 1, &amp;#39;TAT&amp;#39;: 2, &amp;#39;CGA&amp;#39;: 1, &amp;#39;CAG&amp;#39;: 3, &amp;#39;TCT&amp;#39;: 1, &amp;#39;GAT&amp;#39;: 1, &amp;#39;TTT&amp;#39;: 1, &amp;#39;TGC&amp;#39;: 1, &amp;#39;GGA&amp;#39;: 1, &amp;#39;TAA&amp;#39;: 1, &amp;#39;GGC&amp;#39;: 1, &amp;#39;TAC&amp;#39;: 4, &amp;#39;TTA&amp;#39;: 2, &amp;#39;GAC&amp;#39;: 1, &amp;#39;CGT&amp;#39;: 1, &amp;#39;TCA&amp;#39;: 1, &amp;#39;GCA&amp;#39;: 1, &amp;#39;GTA&amp;#39;: 1, &amp;#39;GCC&amp;#39;: 3, &amp;#39;GCT&amp;#39;: 1, &amp;#39;CGC&amp;#39;: 2}) </description>
     </item>
     
   </channel>

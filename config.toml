@@ -12,7 +12,7 @@ theme = "hugo-sustain"
 
 [params]
   avatar = "dingdang.jpg"
-  author = "Edward Chen"
+  author = "Zhihao Chen"
   description = "This is a personal website designed as an expreiment. "
 
   # Custom assets can be linked with their paths relative to static/
