@@ -11,7 +11,7 @@ theme = "hugo-sustain"
   post = ":year/:month/:day"
 
 [params]
-  avatar = "dingdang.jpg"
+  avatar = "Me.png"
   author = "Zhihao Chen"
   description = "This is a personal website designed as an expreiment. "
 
